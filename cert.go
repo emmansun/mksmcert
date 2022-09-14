@@ -6,10 +6,7 @@ package main
 
 import (
 	"crypto"
-	"crypto/ecdsa"
-	"crypto/elliptic"
 	"crypto/rand"
-	"crypto/rsa"
 	"crypto/sha1"
 	"crypto/x509"
 	"crypto/x509/pkix"
@@ -29,7 +26,9 @@ import (
 	"strings"
 	"time"
 
-	pkcs12 "software.sslmate.com/src/go-pkcs12"
+	"github.com/emmansun/gmsm/sm2"
+	"github.com/emmansun/gmsm/smx509"
+	pkcs12 "github.com/emmansun/go-pkcs12"
 )
 
 var userAndHostname string
@@ -64,7 +63,7 @@ func (m *mkcert) makeCert(hosts []string) {
 	tpl := &x509.Certificate{
 		SerialNumber: randomSerialNumber(),
 		Subject: pkix.Name{
-			Organization:       []string{"mkcert development certificate"},
+			Organization:       []string{"mksmcert development certificate"},
 			OrganizationalUnit: []string{userAndHostname},
 		},
 
@@ -101,14 +100,14 @@ func (m *mkcert) makeCert(hosts []string) {
 		tpl.Subject.CommonName = hosts[0]
 	}
 
-	cert, err := x509.CreateCertificate(rand.Reader, tpl, m.caCert, pub, m.caKey)
+	cert, err := smx509.CreateCertificate(rand.Reader, tpl, m.caCert.ToX509(), pub, m.caKey)
 	fatalIfErr(err, "failed to generate certificate")
 
 	certFile, keyFile, p12File := m.fileNames(hosts)
 
 	if !m.pkcs12 {
 		certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: cert})
-		privDER, err := x509.MarshalPKCS8PrivateKey(priv)
+		privDER, err := smx509.MarshalPKCS8PrivateKey(priv)
 		fatalIfErr(err, "failed to encode certificate key")
 		privPEM := pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: privDER})
 
@@ -122,8 +121,8 @@ func (m *mkcert) makeCert(hosts []string) {
 			fatalIfErr(err, "failed to save certificate key")
 		}
 	} else {
-		domainCert, _ := x509.ParseCertificate(cert)
-		pfxData, err := pkcs12.Encode(rand.Reader, priv, domainCert, []*x509.Certificate{m.caCert}, "changeit")
+		domainCert, _ := smx509.ParseCertificate(cert)
+		pfxData, err := pkcs12.Encode(rand.Reader, priv, domainCert, []*smx509.Certificate{m.caCert}, "changeit")
 		fatalIfErr(err, "failed to generate PKCS#12")
 		err = ioutil.WriteFile(p12File, pfxData, 0644)
 		fatalIfErr(err, "failed to save PKCS#12")
@@ -164,13 +163,7 @@ func (m *mkcert) printHosts(hosts []string) {
 }
 
 func (m *mkcert) generateKey(rootCA bool) (crypto.PrivateKey, error) {
-	if m.ecdsa {
-		return ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	}
-	if rootCA {
-		return rsa.GenerateKey(rand.Reader, 3072)
-	}
-	return rsa.GenerateKey(rand.Reader, 2048)
+	return sm2.GenerateKey(rand.Reader)
 }
 
 func (m *mkcert) fileNames(hosts []string) (certFile, keyFile, p12File string) {
@@ -221,7 +214,7 @@ func (m *mkcert) makeCertFromCSR() {
 		csrPEM.Type != "NEW CERTIFICATE REQUEST" {
 		log.Fatalln("ERROR: failed to read the CSR: expected CERTIFICATE REQUEST, got " + csrPEM.Type)
 	}
-	csr, err := x509.ParseCertificateRequest(csrPEM.Bytes)
+	csr, err := smx509.ParseCertificateRequest(csrPEM.Bytes)
 	fatalIfErr(err, "failed to parse the CSR")
 	fatalIfErr(csr.CheckSignature(), "invalid CSR signature")
 
@@ -251,9 +244,9 @@ func (m *mkcert) makeCertFromCSR() {
 		tpl.ExtKeyUsage = append(tpl.ExtKeyUsage, x509.ExtKeyUsageEmailProtection)
 	}
 
-	cert, err := x509.CreateCertificate(rand.Reader, tpl, m.caCert, csr.PublicKey, m.caKey)
+	cert, err := smx509.CreateCertificate(rand.Reader, tpl, m.caCert.ToX509(), csr.PublicKey, m.caKey)
 	fatalIfErr(err, "failed to generate certificate")
-	c, err := x509.ParseCertificate(cert)
+	c, err := smx509.ParseCertificate(cert)
 	fatalIfErr(err, "failed to parse generated certificate")
 
 	var hosts []string
@@ -290,7 +283,7 @@ func (m *mkcert) loadCA() {
 	if certDERBlock == nil || certDERBlock.Type != "CERTIFICATE" {
 		log.Fatalln("ERROR: failed to read the CA certificate: unexpected content")
 	}
-	m.caCert, err = x509.ParseCertificate(certDERBlock.Bytes)
+	m.caCert, err = smx509.ParseCertificate(certDERBlock.Bytes)
 	fatalIfErr(err, "failed to parse the CA certificate")
 
 	if !pathExists(filepath.Join(m.CAROOT, rootKeyName)) {
@@ -303,7 +296,7 @@ func (m *mkcert) loadCA() {
 	if keyDERBlock == nil || keyDERBlock.Type != "PRIVATE KEY" {
 		log.Fatalln("ERROR: failed to read the CA key: unexpected content")
 	}
-	m.caKey, err = x509.ParsePKCS8PrivateKey(keyDERBlock.Bytes)
+	m.caKey, err = smx509.ParsePKCS8PrivateKey(keyDERBlock.Bytes)
 	fatalIfErr(err, "failed to parse the CA key")
 }
 
@@ -312,7 +305,7 @@ func (m *mkcert) newCA() {
 	fatalIfErr(err, "failed to generate the CA key")
 	pub := priv.(crypto.Signer).Public()
 
-	spkiASN1, err := x509.MarshalPKIXPublicKey(pub)
+	spkiASN1, err := smx509.MarshalPKIXPublicKey(pub)
 	fatalIfErr(err, "failed to encode public key")
 
 	var spki struct {
@@ -327,13 +320,13 @@ func (m *mkcert) newCA() {
 	tpl := &x509.Certificate{
 		SerialNumber: randomSerialNumber(),
 		Subject: pkix.Name{
-			Organization:       []string{"mkcert development CA"},
+			Organization:       []string{"mksmcert development CA"},
 			OrganizationalUnit: []string{userAndHostname},
 
 			// The CommonName is required by iOS to show the certificate in the
 			// "Certificate Trust Settings" menu.
 			// https://github.com/FiloSottile/mkcert/issues/47
-			CommonName: "mkcert " + userAndHostname,
+			CommonName: "mksmcert " + userAndHostname,
 		},
 		SubjectKeyId: skid[:],
 
@@ -347,10 +340,10 @@ func (m *mkcert) newCA() {
 		MaxPathLenZero:        true,
 	}
 
-	cert, err := x509.CreateCertificate(rand.Reader, tpl, tpl, pub, priv)
+	cert, err := smx509.CreateCertificate(rand.Reader, tpl, tpl, pub, priv)
 	fatalIfErr(err, "failed to generate CA certificate")
 
-	privDER, err := x509.MarshalPKCS8PrivateKey(priv)
+	privDER, err := smx509.MarshalPKCS8PrivateKey(priv)
 	fatalIfErr(err, "failed to encode CA key")
 	err = ioutil.WriteFile(filepath.Join(m.CAROOT, rootKeyName), pem.EncodeToMemory(
 		&pem.Block{Type: "PRIVATE KEY", Bytes: privDER}), 0400)
@@ -364,5 +357,5 @@ func (m *mkcert) newCA() {
 }
 
 func (m *mkcert) caUniqueName() string {
-	return "mkcert development CA " + m.caCert.SerialNumber.String()
+	return "mksmcert development CA " + m.caCert.SerialNumber.String()
 }

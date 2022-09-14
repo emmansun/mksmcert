@@ -84,7 +84,7 @@ func (m *mkcert) uninstallPlatform() bool {
 	fatalIfCmdErr(err, "rm", out)
 
 	// We used to install under non-unique filenames.
-	legacyFilename := fmt.Sprintf(SystemTrustFilename, "mkcert-rootCA")
+	legacyFilename := fmt.Sprintf(SystemTrustFilename, "mksmcert-rootCA")
 	if pathExists(legacyFilename) {
 		cmd := commandWithSudo("rm", "-f", legacyFilename)
 		out, err := cmd.CombinedOutput()

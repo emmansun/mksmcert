@@ -8,7 +8,6 @@ import (
 	"bytes"
 	"crypto/sha1"
 	"crypto/sha256"
-	"crypto/x509"
 	"encoding/hex"
 	"hash"
 	"os"
@@ -16,6 +15,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strings"
+
+	"github.com/emmansun/gmsm/smx509"
 )
 
 var (
@@ -61,7 +62,7 @@ func (m *mkcert) checkJava() bool {
 
 	// exists returns true if the given x509.Certificate's fingerprint
 	// is in the keytool -list output
-	exists := func(c *x509.Certificate, h hash.Hash, keytoolOutput []byte) bool {
+	exists := func(c *smx509.Certificate, h hash.Hash, keytoolOutput []byte) bool {
 		h.Write(c.Raw)
 		fp := strings.ToUpper(hex.EncodeToString(h.Sum(nil)))
 		return bytes.Contains(keytoolOutput, []byte(fp))

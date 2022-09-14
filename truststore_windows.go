@@ -5,7 +5,6 @@
 package main
 
 import (
-	"crypto/x509"
 	"encoding/pem"
 	"fmt"
 	"io/ioutil"
@@ -14,6 +13,8 @@ import (
 	"path/filepath"
 	"syscall"
 	"unsafe"
+
+	"github.com/emmansun/gmsm/smx509"
 )
 
 var (
@@ -119,7 +120,7 @@ func (w windowsRootStore) deleteCertsWithSerial(serial *big.Int) (bool, error) {
 		}
 		// Parse cert
 		certBytes := (*[1 << 20]byte)(unsafe.Pointer(cert.EncodedCert))[:cert.Length]
-		parsedCert, err := x509.ParseCertificate(certBytes)
+		parsedCert, err := smx509.ParseCertificate(certBytes)
 		// We'll just ignore parse failures for now
 		if err == nil && parsedCert.SerialNumber != nil && parsedCert.SerialNumber.Cmp(serial) == 0 {
 			// Duplicate the context so it doesn't stop the enum when we delete it

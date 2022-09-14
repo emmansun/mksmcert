@@ -8,20 +8,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v3
         with:
           go-version: 1.x
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Build binaries
         run: |
-          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "mkcert-$(git describe --tags)-linux-amd64" -ldflags "-X main.Version=$(git describe --tags)"
-          CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o "mkcert-$(git describe --tags)-linux-arm" -ldflags "-X main.Version=$(git describe --tags)"
-          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o "mkcert-$(git describe --tags)-linux-arm64" -ldflags "-X main.Version=$(git describe --tags)"
-          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o "mkcert-$(git describe --tags)-darwin-amd64" -ldflags "-X main.Version=$(git describe --tags)"
-          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o "mkcert-$(git describe --tags)-darwin-arm64" -ldflags "-X main.Version=$(git describe --tags)"
-          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o "mkcert-$(git describe --tags)-windows-amd64.exe" -ldflags "-X main.Version=$(git describe --tags)"
-          CGO_ENABLED=0 GOOS=windows GOARCH=arm64 go build -o "mkcert-$(git describe --tags)-windows-arm64.exe" -ldflags "-X main.Version=$(git describe --tags)"
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o "mksmcert-$(git describe --tags)-linux-amd64" -ldflags "-X main.Version=$(git describe --tags)"
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=6 go build -o "mksmcert-$(git describe --tags)-linux-arm" -ldflags "-X main.Version=$(git describe --tags)"
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o "mksmcert-$(git describe --tags)-linux-arm64" -ldflags "-X main.Version=$(git describe --tags)"
+          CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -o "mksmcert-$(git describe --tags)-darwin-amd64" -ldflags "-X main.Version=$(git describe --tags)"
+          CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -o "mksmcert-$(git describe --tags)-darwin-arm64" -ldflags "-X main.Version=$(git describe --tags)"
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -o "mksmcert-$(git describe --tags)-windows-amd64.exe" -ldflags "-X main.Version=$(git describe --tags)"
+          CGO_ENABLED=0 GOOS=windows GOARCH=arm64 go build -o "mksmcert-$(git describe --tags)-windows-arm64.exe" -ldflags "-X main.Version=$(git describe --tags)"
       - name: Upload release artifacts
         uses: actions/github-script@v3
         with:
@@ -37,7 +37,7 @@ jobs:
             console.log("Release:", { release });
 
             for (let file of await fs.readdir(".")) {
-              if (!file.startsWith("mkcert-")) continue;
+              if (!file.startsWith("mksmcert-")) continue;
               console.log("Uploading", file);
               await github.repos.uploadReleaseAsset({
                 owner, repo,

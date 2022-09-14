@@ -7,7 +7,6 @@ package main
 
 import (
 	"crypto"
-	"crypto/x509"
 	"flag"
 	"fmt"
 	"log"
@@ -24,24 +23,25 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/emmansun/gmsm/smx509"
 	"golang.org/x/net/idna"
 )
 
-const shortUsage = `Usage of mkcert:
+const shortUsage = `Usage of mksmcert:
 
-	$ mkcert -install
+	$ mksmcert -install
 	Install the local CA in the system trust store.
 
-	$ mkcert example.org
+	$ mksmcert example.org
 	Generate "example.org.pem" and "example.org-key.pem".
 
-	$ mkcert example.com myapp.dev localhost 127.0.0.1 ::1
+	$ mksmcert example.com myapp.dev localhost 127.0.0.1 ::1
 	Generate "example.com+4.pem" and "example.com+4-key.pem".
 
-	$ mkcert "*.example.it"
+	$ mksmcert "*.example.it"
 	Generate "_wildcard.example.it.pem" and "_wildcard.example.it-key.pem".
 
-	$ mkcert -uninstall
+	$ mksmcert -uninstall
 	Uninstall the local CA (but do not delete it).
 
 `
@@ -53,9 +53,6 @@ const advancedUsage = `Advanced options:
 
 	-client
 	    Generate a certificate for client authentication.
-
-	-ecdsa
-	    Generate a certificate with an ECDSA key.
 
 	-pkcs12
 	    Generate a ".p12" PKCS #12 file, also know as a ".pfx" file,
@@ -94,7 +91,6 @@ func main() {
 		installFlag   = flag.Bool("install", false, "")
 		uninstallFlag = flag.Bool("uninstall", false, "")
 		pkcs12Flag    = flag.Bool("pkcs12", false, "")
-		ecdsaFlag     = flag.Bool("ecdsa", false, "")
 		clientFlag    = flag.Bool("client", false, "")
 		helpFlag      = flag.Bool("help", false, "")
 		carootFlag    = flag.Bool("CAROOT", false, "")
@@ -106,7 +102,7 @@ func main() {
 	)
 	flag.Usage = func() {
 		fmt.Fprint(flag.CommandLine.Output(), shortUsage)
-		fmt.Fprintln(flag.CommandLine.Output(), `For more options, run "mkcert -help".`)
+		fmt.Fprintln(flag.CommandLine.Output(), `For more options, run "mksmcert -help".`)
 	}
 	flag.Parse()
 	if *helpFlag {
@@ -136,7 +132,7 @@ func main() {
 	if *installFlag && *uninstallFlag {
 		log.Fatalln("ERROR: you can't set -install and -uninstall at the same time")
 	}
-	if *csrFlag != "" && (*pkcs12Flag || *ecdsaFlag || *clientFlag) {
+	if *csrFlag != "" && (*pkcs12Flag || *clientFlag) {
 		log.Fatalln("ERROR: can only combine -csr with -install and -cert-file")
 	}
 	if *csrFlag != "" && flag.NArg() != 0 {
@@ -144,7 +140,7 @@ func main() {
 	}
 	(&mkcert{
 		installMode: *installFlag, uninstallMode: *uninstallFlag, csrPath: *csrFlag,
-		pkcs12: *pkcs12Flag, ecdsa: *ecdsaFlag, client: *clientFlag,
+		pkcs12: *pkcs12Flag, client: *clientFlag,
 		certFile: *certFileFlag, keyFile: *keyFileFlag, p12File: *p12FileFlag,
 	}).Run(flag.Args())
 }
@@ -154,12 +150,12 @@ const rootKeyName = "rootCA-key.pem"
 
 type mkcert struct {
 	installMode, uninstallMode bool
-	pkcs12, ecdsa, client      bool
+	pkcs12, client             bool
 	keyFile, certFile, p12File string
 	csrPath                    string
 
 	CAROOT string
-	caCert *x509.Certificate
+	caCert *smx509.Certificate
 	caKey  crypto.PrivateKey
 
 	// The system cert pool is only loaded once. After installing the root, checks
@@ -199,7 +195,7 @@ func (m *mkcert) Run(args []string) {
 			log.Println("Note: the local CA is not installed in the Java trust store.")
 		}
 		if warning {
-			log.Println("Run \"mkcert -install\" for certificates to be trusted automatically ⚠️")
+			log.Println("Run \"mksmcert -install\" for certificates to be trusted automatically ⚠️")
 		}
 	}
 
@@ -261,7 +257,7 @@ func getCAROOT() string {
 		}
 		dir = filepath.Join(dir, ".local", "share")
 	}
-	return filepath.Join(dir, "mkcert")
+	return filepath.Join(dir, "mksmcert")
 }
 
 func (m *mkcert) install() {
@@ -285,7 +281,7 @@ func (m *mkcert) install() {
 				log.Printf(`Note: %s support is not available on your platform. ℹ️`, NSSBrowsers)
 			} else if !hasCertutil {
 				log.Printf(`Warning: "certutil" is not available, so the CA can't be automatically installed in %s! ⚠️`, NSSBrowsers)
-				log.Printf(`Install "certutil" with "%s" and re-run "mkcert -install" 👈`, CertutilInstallHelp)
+				log.Printf(`Install "certutil" with "%s" and re-run "mksmcert -install" 👈`, CertutilInstallHelp)
 			}
 		}
 	}
@@ -311,7 +307,7 @@ func (m *mkcert) uninstall() {
 		} else if CertutilInstallHelp != "" {
 			log.Print("")
 			log.Printf(`Warning: "certutil" is not available, so the CA can't be automatically uninstalled from %s (if it was ever installed)! ⚠️`, NSSBrowsers)
-			log.Printf(`You can install "certutil" with "%s" and re-run "mkcert -uninstall" 👈`, CertutilInstallHelp)
+			log.Printf(`You can install "certutil" with "%s" and re-run "mksmcert -uninstall" 👈`, CertutilInstallHelp)
 			log.Print("")
 		}
 	}
@@ -338,7 +334,7 @@ func (m *mkcert) checkPlatform() bool {
 		return true
 	}
 
-	_, err := m.caCert.Verify(x509.VerifyOptions{})
+	_, err := m.caCert.Verify(smx509.VerifyOptions{})
 	return err == nil
 }
 
@@ -385,7 +381,7 @@ func commandWithSudo(cmd ...string) *exec.Cmd {
 	}
 	if !binaryExists("sudo") {
 		sudoWarningOnce.Do(func() {
-			log.Println(`Warning: "sudo" is not available, and mkcert is not running as root. The (un)install operation might fail. ⚠️`)
+			log.Println(`Warning: "sudo" is not available, and mksmcert is not running as root. The (un)install operation might fail. ⚠️`)
 		})
 		return exec.Command(cmd[0], cmd[1:]...)
 	}
