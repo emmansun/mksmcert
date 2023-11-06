@@ -1,6 +1,6 @@
 github.com/emmansun/gmsm v0.16.0/go.mod h1:aCAxgmsH3KnrxzvRLNfFQRQ7llppVaor40JXmeAKEVA=
-github.com/emmansun/gmsm v0.21.4 h1:MXx6U2Qi881D3C1X+EOGmJQ7kVVpXrmS1g85IN0EPxE=
-github.com/emmansun/gmsm v0.21.4/go.mod h1:5hRB+YZ3dy/llu3dcKyBHieRe5Z2V6sqvNJOWEsIcqQ=
+github.com/emmansun/gmsm v0.21.5 h1:G4HwuiqNQGZmAlZi233iwDPcfWKcoax0/GzS3eR+l7o=
+github.com/emmansun/gmsm v0.21.5/go.mod h1:5hRB+YZ3dy/llu3dcKyBHieRe5Z2V6sqvNJOWEsIcqQ=
 github.com/emmansun/go-pkcs12 v0.2.0 h1:ANZ5M2R/yIK4nVtXZPi+RkJ3maBndZhy+pTE3Ty32Uc=
 github.com/emmansun/go-pkcs12 v0.2.0/go.mod h1:ANjJJ0M/46C8ETRPomt5FlkJFyuaii4+q9P3BZLpfx8=
 github.com/jessevdk/go-flags v1.4.0/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
