@@ -4,7 +4,7 @@ go 1.21
 
 require (
 	github.com/emmansun/gmsm v0.27.3
-	github.com/emmansun/go-pkcs12 v0.3.0
+	github.com/emmansun/go-pkcs12 v0.4.0
 	golang.org/x/net v0.26.0
 	howett.net/plist v1.0.1
 )
