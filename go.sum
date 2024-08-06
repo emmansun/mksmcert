@@ -1,7 +1,7 @@
 github.com/emmansun/gmsm v0.27.4 h1:5YXb7knPi0Vi23MPJRTATVjNdwfBqgRvHRY1AJKh7Gg=
 github.com/emmansun/gmsm v0.27.4/go.mod h1:zE4MdgGF+RwOxMXnT7UQ0UWhAGL56aAlWwQbHC/VAz8=
-github.com/emmansun/go-pkcs12 v0.3.0 h1:Z6aEkN2cOFIBptkWaItZiBkpFTwAdMIVQ+rTska3eT4=
-github.com/emmansun/go-pkcs12 v0.3.0/go.mod h1:YzC1HYqbo4fKiK4REz/2roIIAQ7iL1ZrdCZJ3XBjD94=
+github.com/emmansun/go-pkcs12 v0.4.1 h1:joOd25hbexQX7Ca/ydYSwXoQlRsvETbiSP4EpJG2EFo=
+github.com/emmansun/go-pkcs12 v0.4.1/go.mod h1:E8K9f6SEYoB/IgGZxAMpdbYa1i0Frwjr5NnmISILOpY=
 github.com/jessevdk/go-flags v1.4.0/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
 golang.org/x/crypto v0.25.0 h1:ypSNr+bnYL2YhwoMt2zPxHFmbAN1KZs/njMG3hxUp30=
 golang.org/x/crypto v0.25.0/go.mod h1:T+wALwcMOSE0kXgUAnPAHqTLW+XHgcELELW8VaDgm/M=
