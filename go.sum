@@ -1,5 +1,5 @@
-github.com/emmansun/gmsm v0.29.4 h1:zJdohL4WN9zIvKG+xitCJYAjlZrAjoJUcd0A28gQayE=
-github.com/emmansun/gmsm v0.29.4/go.mod h1:kcOsjnqenk+uqpQnb8XFg+xwT4MXC0wKXMMnPabs4NE=
+github.com/emmansun/gmsm v0.29.5 h1:diqiq7JGCYy9sDSxkFsHBv065Pry9EwnrEiq1Qbto2s=
+github.com/emmansun/gmsm v0.29.5/go.mod h1:kcOsjnqenk+uqpQnb8XFg+xwT4MXC0wKXMMnPabs4NE=
 github.com/emmansun/go-pkcs12 v0.3.0 h1:Z6aEkN2cOFIBptkWaItZiBkpFTwAdMIVQ+rTska3eT4=
 github.com/emmansun/go-pkcs12 v0.3.0/go.mod h1:YzC1HYqbo4fKiK4REz/2roIIAQ7iL1ZrdCZJ3XBjD94=
 github.com/jessevdk/go-flags v1.4.0/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
