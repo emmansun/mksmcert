@@ -1,10 +1,10 @@
 github.com/emmansun/gmsm v0.29.6 h1:hbVHyihqutLkeQiIRwXq3cMy/Vo3xjDzJ2QYXF8a/n8=
 github.com/emmansun/gmsm v0.29.6/go.mod h1:72cc1bejYIaH0IHo1VATBceMcUXQJLh+OtrtzIYmMgw=
-github.com/emmansun/go-pkcs12 v0.3.0 h1:Z6aEkN2cOFIBptkWaItZiBkpFTwAdMIVQ+rTska3eT4=
-github.com/emmansun/go-pkcs12 v0.3.0/go.mod h1:YzC1HYqbo4fKiK4REz/2roIIAQ7iL1ZrdCZJ3XBjD94=
+github.com/emmansun/go-pkcs12 v0.4.2 h1:mjA8LLYktmr6K9qud5wtz5y2vEkK/c5W4gi3+Iv9U74=
+github.com/emmansun/go-pkcs12 v0.4.2/go.mod h1:CpSXcIncUz9V0dV9xAkQ3k2QgS64I8GBh/5G3qwebH8=
 github.com/jessevdk/go-flags v1.4.0/go.mod h1:4FA24M0QyGHXBuZZK/XkWh8h0e1EYbRYJSGM75WSRxI=
-golang.org/x/crypto v0.30.0 h1:RwoQn3GkWiMkzlX562cLB7OxWvjH1L8xutO2WoJcRoY=
-golang.org/x/crypto v0.30.0/go.mod h1:kDsLvtWBEx7MV9tJOj9bnXsPbxwJQ6csT/x4KIN4Ssk=
+golang.org/x/crypto v0.31.0 h1:ihbySMvVjLAeSH1IbfcRTkD/iNscyz8rGzjF/E5hV6U=
+golang.org/x/crypto v0.31.0/go.mod h1:kDsLvtWBEx7MV9tJOj9bnXsPbxwJQ6csT/x4KIN4Ssk=
 golang.org/x/net v0.32.0 h1:ZqPmj8Kzc+Y6e0+skZsuACbx+wzMgo5MQsJh9Qd6aYI=
 golang.org/x/net v0.32.0/go.mod h1:CwU0IoeOlnQQWJ6ioyFrfRuomB8GKF6KbYXZVyeXNfs=
 golang.org/x/sys v0.28.0 h1:Fksou7UEQUWlKvIdsqzJmUmCX3cZuD2+P3XyyzwMhlA=
