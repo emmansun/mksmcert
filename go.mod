@@ -3,7 +3,7 @@ module github.com/emmansun/mksmcert
 go 1.21
 
 require (
-	github.com/emmansun/gmsm v0.29.7
+	github.com/emmansun/gmsm v0.29.8
 	github.com/emmansun/go-pkcs12 v0.4.2
 	golang.org/x/net v0.35.0
 	howett.net/plist v1.0.1
